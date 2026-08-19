@@ -26,7 +26,7 @@ function insertShuffled(array) {
 }
 
 const vehiclesStore = useVehciles();
-const {vehiclesInScreen} = storeToRefs(vehiclesStore);
+const {vehiclesInScreen, vehilesInStorage} = storeToRefs(vehiclesStore);
 
 const getVehicles = async() => {
   loading.value = true;
