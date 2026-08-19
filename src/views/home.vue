@@ -64,7 +64,7 @@ onMounted(() => {
   <template v-if="loading">
     <skeleton_loading h="100px"/>
     <div class="cardsContainer">
-      <vehicleCard v-for="n in 4" :key="n" w="100%" h="120px"/>
+      <vehicleCard v-for="n in 4" :key="n"/>
     </div>
   </template>
   <template v-else>
@@ -97,11 +97,14 @@ onMounted(() => {
 
 @media (min-width: 1025px) {
   .cardsContainer {
-    width: 90%;
-    display: flex;
+    width: 100%;
+    /* display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center; */
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     margin: 1rem auto;
+    gap: 10px;
   }
   .emptyVehicles {
     font-size: 1.5rem;

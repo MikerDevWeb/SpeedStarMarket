@@ -1,152 +1,175 @@
 <script setup>
-import { ref, onMounted, inject } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import { useVehciles } from '@/stores/home/useVehciles';
+import filters from '@/components/filters.vue';
+import vehicleCard from '@/components/vehicleCard.vue';
+import axios from 'axios';
+import { inject, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
-import headerComponent from '/src/components/headerComponent.vue'
-import vehicleCard from '/src/components/vehicleCard.vue'
+const router = useRouter();
+const route = useRoute();
+const vehiclesStore = useVehciles();
+const {vehiclesInScreen} = storeToRefs(vehiclesStore);
 
-const vehicles = ref([])
-const error = ref(null)
-const loading = ref(true)
-const searchTerm = ref('')
+const api = inject('apilink');
+const searchTerm = ref(route.query.search || '');
 
-const route = useRoute()
-const router = useRouter()
-const apilink = inject('apilink');
+const loading = ref(true);
+const items = ref([]);
+const message = ref('');
 
-async function fetchData() {
-  if (searchTerm.value.trim() === '') return
-  loading.value = true
+const excecuteSearch = async() => {
+    loading.value = true;
+    message.value = '';
+    if(searchTerm.value.length < 1) {
+      await getRecentPublications();
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${api}/search.php?search=${searchTerm.value}`);
+
+      if(response.data.success) {
+        items.value = response.data.items;
+        if(items.value.length > 0) {
+          vehiclesStore.setVehicles(items.value);
+        } else {
+          message.value = `Sin resultados para "${searchTerm.value}"`;
+          showMessage.value = true;
+          await getRecentPublications();
+        }
+      } else {
+        message.value = response.data.message;
+      }
+
+    } catch {
+      message.value = 'Error al procesar tu búsqueda';
+      showMessage.value = true;
+    } finally {
+      loading.value = false;
+    }
+}
+
+const showMessage = ref(false);
+
+const getRecentPublications = async() => {
+  loading.value = true;
+  const vehiclesLocal = JSON.parse(localStorage.getItem('recentPublications')) || [];
+  if(vehiclesLocal.length > 0) {
+    items.value = vehiclesLocal;
+    vehiclesStore.setVehicles(vehiclesLocal);
+    loading.value = false;
+    return;
+  }
+
   try {
-    const response = await axios.get(`${apilink}/search.php?search=${searchTerm.value}`)
-    vehicles.value = response.data
-  } catch (err) {
-    error.value = ''
+    const response = await axios.get(`${api}recentPublication.php`);
+
+    items.value = response.data.items;
+    vehiclesStore.setVehicles(items.value);
+  } catch {
+    message.value = 'Error inesperado';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
-function goHome() {
-  router.push({ name: 'Home' })
-}
+onMounted(()=>{
+  excecuteSearch();
+});
 
-onMounted(() => {
-  searchTerm.value = route.query.search || ''
-  fetchData()
+let debounceTimer = null;
+
+watch(searchTerm, (newVal) => {
+  clearTimeout(debounceTimer);
+
+  debounceTimer = setTimeout(() => {
+    if(newVal === '') {
+      getRecentPublications();
+      showMessage.value = false;
+    } else {
+      excecuteSearch();
+    }
+  }, 500);
+}, {immediate: true});
+
+watch(vehiclesInScreen, (newVal) => {
+  items.value = newVal;
 })
+
 </script>
 
 <template>
-  <div>
-    <headerComponent />
-    <div class="pageContent">
-      <div v-if="loading">Cargando...</div>
-      <div v-else-if="error">{{ error }}</div>
-      <div v-if="vehicles.length === 0" class="IGGM">
-        <h2 class="IGGM__msg">No hay resultados para el termino " {{ searchTerm }} ", puedes buscar un termino diferente.</h2>
-        <h2 class="IGGM__notResults" @click="goHome">Ir al inicio</h2>
+  <div class="pageContent">
+      <input type="text" class="search__term glass" v-model="searchTerm" :class="{desabledElement: loading}" placeholder="¿Que tienes en mente?">
+      <filters v-if="items.length > 0 && !loading"/>
+      <div class="itemsContainer" v-if="loading">
+        <vehicleCard v-for="n in 6" :key="n"/>
       </div>
-      <div v-else class="results__container">
-            <h2 class="searchTerm">Se encontraron <span class="searchTerm-span">{{ vehicles.length  }}</span> resultados para " <span class="searchTerm-span">{{ searchTerm }}</span> "</h2>
-        <span class="results__container-items">
-            <vehicleCard v-for="vehicle in vehicles" :key="vehicle.id" :vehicleParam="vehicle.id" />
-        </span>
+      <div class="itemsContainer" v-else>
+        <template v-if="message">
+          <span class="emptyMessage show" v-show="showMessage">{{ message }}</span>
+          <span class="othersVehicles" v-if="items.length > 0">Vehículos que podrían interesarte</span>
+          <vehicleCard v-for="item in items" :key="item.id" :vehicleParam="item"/>
+        </template>
+        <template v-else>
+          <vehicleCard v-for="item in items" :key="item.id" :vehicleParam="item" v-if="items.length > 0"/>
+          <span class="emptyMessage show" v-else>Sin resultados para "{{ searchTerm }}"</span>
+        </template>
       </div>
-    </div>
   </div>
 </template>
 
 <style scoped>
-@media (min-width: 1025px) {
-
-  .pageContent {
-      margin: 70px auto;
-      width: 90%;
-      padding: 10px
-  }
-  .results__container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 1rem;
-  }
-  .results__container-items{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      flex-wrap: wrap;
-  }
-  .searchTerm {
-      font-size: 1.5rem;
-      font-weight: 300;
-  }
-  .searchTerm-span {
-      font-weight: bold;
-      padding: 0 1px;
-  }
-  .IGGM {
-      height: 50vh;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3rem;
-  }
-  .IGGM__msg {
-      font-size: 3rem;
-  }
-  .IGGM__notResults {
-      font-size: 2rem;
-      border: 1px solid black;
-      padding: 1rem;
-      border-radius: 1rem;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: all .2s ease;
-      width: 20%;
-      text-align: center
-  }
-  .IGGM__notResults:hover {
-      background-color: black;
-      color: white;
-      width: 30%;
-  }
+.search__term {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  font-size: 100%;
+  outline: none;
+  font-weight: 500;
+  letter-spacing: 1px;
 }
-@media (max-width: 480px) {
-  .pageContent {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-bottom: 20px;
+.itemsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+.emptyMessage {
+  grid-column: span 2;
+  font-size: 1.3rem;
+  margin-top: 1rem;
+  text-align: center;
+  border-bottom: 1px solid var(--muted-text);
+}
+.desabledElement {
+  pointer-events: none;
+}
+.othersVehicles {
+  grid-column: span 2;
+  font-size: 1.1rem;
+  color: var(--muted-text);
+  padding: 10px 0;
+}
+@media (min-width: 1025px) {
+  .search__term {
+    width: 70%;
+    height: 50px;
   }
-  .results__container {
-    width: 90%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 0 5px;
-    align-items: center;
-    justify-content: center;
+  .othersVehicles {
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding-top: 1rem;
+    grid-column: span 6;
   }
-  .searchTerm {
-    width: 100%;
-    font-size: 100%;
-    border-bottom: 1px solid var(--blackColor);
-    padding-bottom: 10px;
+  .emptyMessage {
+    grid-column: span 6;
+    padding: 1rem 0;
   }
-  .results__container-items {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px 0;
+  .itemsContainer {
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 </style>

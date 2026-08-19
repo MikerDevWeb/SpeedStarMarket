@@ -3,11 +3,11 @@ import { ref } from "vue";
 
 export const useVehciles = defineStore('useVehicles', () => {
     const vehiclesInScreen = ref([]);
-    const vehilesInStorage = ref(JSON.parse(localStorage.getItem('vehiclesHome')) || []);
+    const vehilesInStorage = ref(JSON.parse(localStorage.getItem('vehiclesStorage')) || []);
 
     function filterForType(type) {
         if(type === 'all') {
-            vehiclesInScreen.value = JSON.parse(localStorage.getItem('vehiclesHome'));
+            vehiclesInScreen.value = JSON.parse(localStorage.getItem('vehiclesStorage'));
         } else {
             const newVehicles = vehilesInStorage.value.filter(item => item.type === type);
             vehiclesInScreen.value = newVehicles;
@@ -15,7 +15,7 @@ export const useVehciles = defineStore('useVehicles', () => {
     }
 
     function setVehicles(items) {
-        localStorage.setItem('vehiclesHome', JSON.stringify(items));
+        localStorage.setItem('vehiclesStorage', JSON.stringify(items));
         vehilesInStorage.value = items;
         vehiclesInScreen.value = items;
     }

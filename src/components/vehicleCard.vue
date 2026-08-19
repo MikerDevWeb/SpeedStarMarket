@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, inject } from 'vue'
+import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import skeleton_loading from './skeleton_loading.vue';
 import { capitalize } from '@/utils/capitalize.js';
+import { formatPrice } from '@/utils/formatPrice.js';
 
 const props = defineProps({
   vehicleParam: {
@@ -32,7 +33,7 @@ function goToView() {
     <img :src="`${imageLink}/${vehicle.image}`" :alt="vehicle.model" class="vehicle__Card-img"/>
     <span class="vehicle__Card--info">
       <span class="vehicle__Card-title">{{ capitalize(vehicle.brand) }} {{ capitalize(vehicle.model) }} - {{ vehicle.year }}</span>
-      <span class="vehicle__card-price">${{ vehicle.price }} • {{ vehicle.mileage }}Km</span>
+      <span class="vehicle__card-price">{{ formatPrice(vehicle.price) }} • {{ vehicle.mileage }}Km</span>
       <span class="vehicle__card--id">ID: {{ vehicle.id }}</span>
       <span class="vehicle__card-location">{{ capitalize(vehicle.location) }}</span>
     </span>
@@ -50,10 +51,11 @@ function goToView() {
   justify-content: flex-start;
   padding: 10px;
   gap: 10px;
+  cursor: pointer;
 }
 .vehicle__Card-title {
   width: 100%;
-  font-size: clamp(0.5rem, 1rem, 1rem);
+  font-size: clamp(0.5rem, 0.9rem, 1rem);
   font-weight: bold;
 }
 .vehicle__Card-img {
@@ -79,7 +81,7 @@ function goToView() {
 }
 
 .vehicle__card-location, .vehicle__card--id  {
-  font-size: 85%;
+  font-size: clamp(60%, 75%, 80%);
   font-weight: 500;
   color: var(--muted-text);
 }

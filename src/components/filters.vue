@@ -27,7 +27,7 @@ function filterCards(type) {
 </script>
 
 <template>
-    <div class="filters__container show">
+    <div class="filters__container show glass">
       <button class="filters__btn glass" v-for="fil in filters" :class="{filters__btn_active: actualFilter === fil.val}" @click="filterCards(fil.val)">{{ fil.name }}</button>
     </div>
   </template>
@@ -40,17 +40,24 @@ function filterCards(type) {
   align-items: center;
   justify-content: center;
   gap: 5px;
+  position: sticky;
+  top: 60px;
+  z-index: 9;
+  padding: 0 5px;
 }
 .filters__btn {
   flex: 1;
   height: 30px;
   font-size: 80%;
+  cursor: pointer;
 }
 
 @media (min-width: 1025px) {
   .filters__container {
     width: 60%;
     gap: 10px;
+    position: relative;
+    top: 0;
   }
 }
 
