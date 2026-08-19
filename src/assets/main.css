@@ -1,6 +1,11 @@
 :root {
-  --background-page: #ffffffee;
+  --background-page: #f3f3f3ee;
   --blackColor: #000000;
+
+  --radius-standard: 10px;
+  --card-background: #80808027;
+
+  --muted-text: rgb(73, 73, 73);
 }
 
 * {
@@ -15,11 +20,14 @@
 
 body {
   background-color: var(--background-page);
+  overflow-x: hidden;
 }
 
 main {
   width: 100vw;
+  min-height: 90vh;
 }
+
 
 .pageContent {
   width: 100vw;
@@ -28,4 +36,42 @@ main {
   flex-direction: column;
   margin: 70px auto 0 auto;
   gap: 1rem;
+  padding: 10px;
 }
+
+@keyframes show {
+  0% {
+    opacity: 0;
+  } 
+  100% {
+    opacity: 1;
+  }
+}
+
+.show {
+  animation: show .3s forwards;
+}
+
+.glass {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 229, 255, 0.08) 0%,
+    rgba(139, 92, 246, 0.06) 100%
+    );
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    border: none;
+    border-radius: var(--radius-standard);
+    box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+@media (min-width: 1025px) {
+    main {
+      display: flex;
+    }
+    .pageContent {
+      align-items: center;
+    }
+  }

@@ -1,78 +1,102 @@
 <script setup>
 import { ref, onMounted, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import skeleton_loading from './skeleton_loading.vue';
+import { capitalize } from '@/utils/capitalize.js';
 
 const props = defineProps({
   vehicleParam: {
-    type: Number,
-    required: true
+    type: Object,
+    default: {}
   }
 })
 
-const vehicle = ref(null)
-const loading = ref(true)
-const error = ref(null)
-const apilink = inject('apilink')
-
+const vehicle = ref(props.vehicleParam);
+const imageLink = inject('vehicleImg');
 const router = useRouter()
 
-async function getVehicleDetails(vehicleParam) {
-  try {
-    const response = await axios.get(`${apilink}/index.php?id=${vehicleParam}`)
-    if (response.data.message) {
-      error.value = response.data.message
-    } else {
-      vehicle.value = response.data[0]
-    }
-  } catch (err) {
-    error.value = 'Error fetching vehicle details'
-  } finally {
-    loading.value = false
-  }
-}
-
-function getImageUrl(imageName) {
-  return `${apilink}vehiclesImgs/${imageName}`
-}
-
 function goToView() {
-  router.push({ name: 'vehicleView', query: { id: props.vehicleParam } })
+  router.push({ name: 'vehicleView', query: { id: vehicle.value.id } })
 }
-
-onMounted(() => {
-  getVehicleDetails(props.vehicleParam)
-})
 </script>
 
 <template>
-   <div v-if="error" class="vehicle__Card">
-    <p class="vehicle__Card-title-e404">No hay vehiculo para mostrar</p>
+  <div class="vehicle__Card show" v-if="Object.keys(vehicle).length < 1">
+    <skeleton_loading/>
+    <skeleton_loading h="160px"/>
+    <skeleton_loading/>
+    <skeleton_loading/>
+    <skeleton_loading/>
   </div>
-  <div v-if="vehicle" class="vehicle__Card" @click="goToView" :data-card-type="vehicle.type">
-    <span class="vehicle__Card-title">{{ vehicle.brand }} {{ vehicle.model }} {{ vehicle.year }}</span>
-    <img :src="getImageUrl(vehicle.image)" :alt="vehicle.model" class="vehicle__Card-img"/>
-    <span class="vehicle__card-price">${{ vehicle.price }}</span>
-    <span class="vehicle__card-mileage">{{ vehicle.mileage }} Km</span>
-    <span class="vehicle__card-location">{{ vehicle.location }}</span>
+  <div class="vehicle__Card show glass" @click="goToView" :data-card-type="vehicle.type" v-else>
+    <img :src="`${imageLink}/${vehicle.image}`" :alt="vehicle.model" class="vehicle__Card-img"/>
+    <span class="vehicle__Card--info">
+      <span class="vehicle__Card-title">{{ capitalize(vehicle.brand) }} {{ capitalize(vehicle.model) }} - {{ vehicle.year }}</span>
+      <span class="vehicle__card-price">${{ vehicle.price }} • {{ vehicle.mileage }}Km</span>
+      <span class="vehicle__card--id">ID: {{ vehicle.id }}</span>
+      <span class="vehicle__card-location">{{ capitalize(vehicle.location) }}</span>
+    </span>
   </div>
 </template>
 
 <style scoped>
-@keyframes show {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.vehicle__Card {
+  height: 290px;
+  border-radius: var(--radius-standard);
+  background-color: var(--card-background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  gap: 10px;
+}
+.vehicle__Card-title {
+  width: 100%;
+  font-size: clamp(0.5rem, 1rem, 1rem);
+  font-weight: bold;
+}
+.vehicle__Card-img {
+  width: 100%;
+  height: 200px;
+  border-radius: var(--radius-standard);
+  object-fit: cover;
+  filter: contrast(1);
+}
+.vehicle__Card--info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 5px;
+  gap: 3px;
 }
 
-.vehicle__Card {
-  animation: show 1s forwards;
+.vehicle__card-price {
+  width: 100%;
+  font-size: 90%;
+  font-weight: 500;
+}
+
+.vehicle__card-location, .vehicle__card--id  {
+  font-size: 85%;
+  font-weight: 500;
+  color: var(--muted-text);
 }
 
 @media (min-width: 1025px) {
+  .vehicle__Card {
+    width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle__Card {
+    flex: 1;
+  }
+}
+
+/* @media (min-width: 1025px) {
   .vehicle__Card {
     border: none;
     background-color: buttonface;
@@ -167,5 +191,5 @@ onMounted(() => {
     font-weight: 500;
     letter-spacing: 1px;
   }
-}
+} */
 </style>

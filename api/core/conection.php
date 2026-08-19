@@ -2,7 +2,7 @@
 $serverName = 'localhost';
 $username = 'root';
 $password = '';
-$dbName = 'motor_finder';
+$dbName = 'speed_star_market';
 
 $conn = new mysqli($serverName, $username, $password, $dbName);
 

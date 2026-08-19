@@ -1,36 +1,60 @@
 <script setup>
-function handleFilter(type, dataBtn) {
-  filterCards(type)
-  applyClassBtn(dataBtn)
-}
+import { ref } from 'vue'
+import { useVehciles } from '@/stores/home/useVehciles';
+
+const filters = [
+  {
+    name: 'Todo',
+    val: 'all'
+  },
+  {
+    name: 'Autos',
+    val: 'car'
+  },
+  {
+    name: 'Motocicletas',
+    val: 'bike'
+  },
+];
+
+const actualFilter = ref('all');
+const vehiclesStore = useVehciles();
 
 function filterCards(type) {
-  const cardsInDom = document.querySelectorAll('.vehicle__Card')
-  cardsInDom.forEach(card => {
-    const cardType = card.getAttribute('data-card-type')
-    card.style.display = (type === 'all' || cardType === type) ? 'flex' : 'none'
-  })
-}
-
-function applyClassBtn(dataBtn) {
-  const filterBtns = document.querySelectorAll('.filters__btn')
-  filterBtns.forEach(btn => {
-    const btnData = btn.getAttribute('data-filter')
-    btn.classList.toggle('filters__btn-active', btnData === dataBtn)
-  })
+  vehiclesStore.filterForType(type);
+  actualFilter.value = type;
 }
 </script>
 
 <template>
-    <div class="filters__container">
-      <button class="filters__btn" @click="handleFilter('car', 'cars')" :data-filter="'cars'">Autos</button>
-      <button class="filters__btn" @click="handleFilter('motorcycle', 'bikes')" :data-filter="'bikes'">Motocicletas</button>
-      <button class="filters__btn" @click="handleFilter('all', 'all')" :data-filter="'all'">Todo</button>
+    <div class="filters__container show">
+      <button class="filters__btn glass" v-for="fil in filters" :class="{filters__btn_active: actualFilter === fil.val}" @click="filterCards(fil.val)">{{ fil.name }}</button>
     </div>
   </template>
 
 <style scoped>
+.filters__container {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.filters__btn {
+  flex: 1;
+  height: 30px;
+  font-size: 80%;
+}
+
 @media (min-width: 1025px) {
+  .filters__container {
+    width: 60%;
+    gap: 10px;
+  }
+}
+
+/* @media (min-width: 1025px) {
   .filters__container {
       width: 90%;
       height: 50px;
@@ -78,10 +102,10 @@ function applyClassBtn(dataBtn) {
       font-size: 100%;
       letter-spacing: 1px;
     }
-}
+} */
 
 
-.filters__btn-active {
+.filters__btn_active {
   background-color: black;
   color: white;
 }

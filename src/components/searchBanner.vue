@@ -2,31 +2,116 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const param = ref(null)
+const param = ref('');
 const router = useRouter()
 
 function goToSearch() {
-  router.push({ name: 'searching', query: { search: param.value } })
+    if(param.value.length > 0) {
+        router.push({ name: 'searching', query: { search: param.value } })
+    }
 }
 </script>
 
 <template>
-    <div class="banner">
+    <div class="banner show">
         <img src="/src/assets/banners/principalBanner.jpeg" alt="banner" class="backgroundImg">
+        <span class="glassbkg glass"></span>
         <span class="banner__content">
             <h3 class="banner__text">¡Encuentra tu nuevo vehículo ahora!</h3>
-            <form class="banner__form" @submit.prevent="goToSearch">
+            <div class="banner__form">
                 <input type="text" placeholder="Marca, modelo o año" class="banner__form-input" v-model="param" required>
-                <button type="submit" class="banner__form-submit">
+                <button type="button" class="banner__form-submit" @click="goToSearch">
                     Buscar
                 </button>
-            </form>
+            </div>
         </span>
     </div>
 </template>
 
 <style scoped>
- @media (min-width: 1025px) {
+.banner {
+    width: 100%;
+    height: 100px;
+    position: relative;
+}
+
+.backgroundImg {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 0;
+    border-radius: var(--radius-standard);
+    object-fit: cover;
+}
+.glassbkg {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.banner__content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.banner__text {
+    font-size: 1.1rem;
+    color: var(--blackColor);
+    text-shadow: 0 0 5px var(--background-page);
+}
+
+.banner__form {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    padding: 0 5px;
+    background-color: var(--background-page);
+    border-radius: var(--radius-standard);
+}
+.banner__form-input {
+    width: calc(100% - 20%);
+    height: 90%;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    font-size: 90%;
+    padding: 0 5px;
+    font-weight: bold;
+}
+.banner__form-submit {
+    width: 20%;
+    height: 60%;
+    font-size: 90%;
+    background-color: transparent;
+    border: none;
+    font-weight: 500;
+    border-left: 1px solid var(--muted-text);
+}
+
+@media (min-width: 1025px) {
+    .banner {
+       width: 55%;
+        height: 150px;
+    }
+}
+
+
+
+ /* @media (min-width: 1025px) {
      .banner {
          width: 100%;
          display: flex;
@@ -169,5 +254,5 @@ function goToSearch() {
         font-weight: bold;
         text-shadow: 0 0 1px var(--background-page);
     }
- }
+ } */
 </style>
