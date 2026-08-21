@@ -43,7 +43,6 @@ const sendRegister = async() => {
     try {
         const response = await axios.post(`${api}/login/register.php`, dataBody);
 
-        console.log(response.data);
 
         if(response.data.success) {
             setToken(response.data.auth);

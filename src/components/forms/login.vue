@@ -51,7 +51,6 @@ const sendLogin = async() => {
     try {
         const response = await axios.post(`${api}/login/login.php`, dataBody);
 
-        console.log(response.data);
         if(response.data.success) {
             setToken(response.data.auth);
             router.push('/dashboard');
