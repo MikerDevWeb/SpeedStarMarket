@@ -5,7 +5,9 @@
   --radius-standard: 10px;
   --card-background: #80808027;
 
-  --muted-text: rgb(73, 73, 73);
+  --muted-text: #494949;
+
+  --error-color: #ff0000b2;
 }
 
 * {
@@ -26,7 +28,7 @@ body {
 main {
   width: 100vw;
   min-height: 90vh;
-  padding-bottom: 2rem;
+  padding-bottom: 3rem;
 }
 
 
@@ -68,7 +70,6 @@ main {
     0 8px 32px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
-
 
 @media (min-width: 1025px) {
     main {

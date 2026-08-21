@@ -21,3 +21,21 @@ function objectJson(bool $success, array $object) {
         'response' => $object
     ]);
 }
+
+//sanitize texts
+function sanitizeString($input): string {
+    if (!is_string($input)) {
+        return $input;
+    }
+
+    $value = trim($input);
+
+    $value = strip_tags($value);
+
+    
+    $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+
+    $value = preg_replace('/\s+/', ' ', $value);
+
+    return $value;
+}

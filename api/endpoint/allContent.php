@@ -6,7 +6,7 @@ setHeaders();
 
 try {
     //find all vehicles
-    $getVehicles = $conn->prepare('SELECT vehicle_id, brand, model, year, image, price, mileage, location, type FROM vehicles LIMIT 10');  
+    $getVehicles = $conn->prepare('SELECT vehicle_id, brand, model, year, image, price, mileage, location, type FROM vehicles LIMIT 50');  
     $getVehicles->execute();
     
     $vehiclesData = $getVehicles->get_result();

@@ -52,6 +52,10 @@ function filterCards(type) {
   cursor: pointer;
 }
 
+.glass {
+  backdrop-filter: blur(20px);
+}
+
 @media (min-width: 1025px) {
   .filters__container {
     width: 60%;

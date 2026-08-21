@@ -1,29 +1,30 @@
 import{ createRouter, createWebHistory } from 'vue-router';
-import vehicleView from '/src/views/vehicleView.vue';
-import Home from '/src/views/home.vue';
-import Search from '/src/views/search.vue';
-import SellMyVehicle from '/src/views/sellMyVehicle.vue';
 
 const routes = [
     {
         path: '/',
         name: 'Home',
-        component: Home
+        component: () => import('@/views/home.vue')
     },
     {
         path: '/vehicle',
         name: 'vehicleView',
-        component: vehicleView
+        component: () => import('@/views/vehicleView.vue')
     },
     {
         path: '/searching',
         name: 'searching',
-        component: Search
+        component: () => import('@/views/search.vue')
+    },
+    {
+        path: '/account',
+        name: 'account',
+        component: () => import('@/views/account.vue')
     },
     {
         path: '/sell-my-vehicle',
         name: 'sellMyVehicle',
-        component: SellMyVehicle
+        component: () => import('@/views/sellMyVehicle.vue')
     }
 ];
 
