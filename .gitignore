@@ -16,3 +16,7 @@ dist/
 
 # IDEs and editors
 .vscode/
+
+# PHP / API
+api/vendor/
+api/core/jwt_funtions/jwt_config.php

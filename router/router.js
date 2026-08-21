@@ -22,6 +22,11 @@ const routes = [
         component: () => import('@/views/account.vue')
     },
     {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: () => import('@/views/dashboard.vue')
+    },
+    {
         path: '/sell-my-vehicle',
         name: 'sellMyVehicle',
         component: () => import('@/views/sellMyVehicle.vue')

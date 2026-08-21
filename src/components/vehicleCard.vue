@@ -30,7 +30,7 @@ function goToView() {
     <skeleton_loading/>
   </div>
   <div class="vehicle__Card show glass" @click="goToView" :data-card-type="vehicle.type" v-else>
-    <img :src="`${imageLink}/${vehicle.image}`" :alt="vehicle.model" class="vehicle__Card-img"/>
+    <img :src="`${imageLink}/${vehicle.image}`" :alt="vehicle.model" class="vehicle__Card-img" loading="lazy"/>
     <span class="vehicle__Card--info">
       <span class="vehicle__Card-title">{{ capitalize(vehicle.brand) }} {{ capitalize(vehicle.model) }} - {{ vehicle.year }}</span>
       <span class="vehicle__card-price">{{ formatPrice(vehicle.price) }} • {{ vehicle.mileage }}Km</span>

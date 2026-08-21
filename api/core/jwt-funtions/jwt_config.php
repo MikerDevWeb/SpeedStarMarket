@@ -1,0 +1,4 @@
+<?php
+define('JWT_SECRET', '8da449c781d407c388274e4e21a6101af15f1c8177b442e83a920f15ae930bf00c59d9d89b5c5cd33558f5b41288f6b35f87ece86f4a14e939c1ba7e636ad0dc');
+define('JWT_EXPIRATION', 60 * 60 * 24 * 30); // 30 days
+define('JWT_ALGO', 'HS256');
